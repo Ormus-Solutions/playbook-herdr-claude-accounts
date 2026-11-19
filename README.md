@@ -64,8 +64,9 @@ you finish, run the "Done when" checks and show me their output.
 
 1. See the demo, with no setup: `bash examples/run.sh`
 2. Copy the example config and list your accounts in it, one `[[accounts]]`
-   table per config dir, with a label you choose:
-   `mkdir -p ~/.config/playbook-herdr-claude-accounts && cp examples/config.example.toml ~/.config/playbook-herdr-claude-accounts/config.toml`
+   table per config dir, with a label you choose. The copy skips a config
+   that is already there, so your accounts are kept:
+   `mkdir -p ~/.config/playbook-herdr-claude-accounts && { [ -e ~/.config/playbook-herdr-claude-accounts/config.toml ] || cp examples/config.example.toml ~/.config/playbook-herdr-claude-accounts/config.toml; }`
 3. Add the hook to each account:
    `python3 src/install_hook.py install ~/.claude-work`
 4. Start Claude Code as each account once and send one message, so the hook

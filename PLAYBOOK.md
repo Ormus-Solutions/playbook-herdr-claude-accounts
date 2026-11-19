@@ -77,10 +77,11 @@ an e-mail, and the dash refuses a label with an `@` in it.
 
 ```bash
 mkdir -p ~/.config/playbook-herdr-claude-accounts
-cp examples/config.example.toml ~/.config/playbook-herdr-claude-accounts/config.toml
+[ -e ~/.config/playbook-herdr-claude-accounts/config.toml ] || cp examples/config.example.toml ~/.config/playbook-herdr-claude-accounts/config.toml
 ```
 
-Then edit that file: one `[[accounts]]` table per account, with `label` and
+The copy runs only when there is no config yet, so running this step again
+keeps the accounts the person already wrote. Then edit that file: one `[[accounts]]` table per account, with `label` and
 `config_dir`. Delete the example tables the person does not have.
 
 Verify: `python3 src/accounts_dash.py --json | python3 -c 'import json, sys; print(*[(a["label"], a["state"]) for a in json.load(sys.stdin)["accounts"]])'`
