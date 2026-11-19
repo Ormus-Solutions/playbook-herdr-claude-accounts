@@ -40,7 +40,8 @@ except (ValueError, KeyError, TypeError):
   exit 1
 fi
 
-command="python3 src/accounts_dash.py --watch"
+# The absolute path: a shell startup file that changes folder cannot break it.
+command="python3 $(printf '%q' "$repo/src/accounts_dash.py") --watch"
 for arg in "$@"; do
   command+=" $(printf '%q' "$arg")"
 done

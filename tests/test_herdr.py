@@ -27,6 +27,13 @@ esac
 REPLY = '{"result":{"tab":{"tab_id":"w1:t9"},"root_pane":{"pane_id":"w1:p42"}}}'
 
 
+def bash_quote(path: Path) -> str:
+    """The path as the script quotes it (bash printf %q), so a clone in a folder
+    with a space still matches."""
+    return subprocess.run(["bash", "-c", 'printf %q "$1"', "_", str(path)],
+                          capture_output=True, text=True, check=True).stdout
+
+
 class HerdrTabTest(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory()
@@ -56,7 +63,8 @@ class HerdrTabTest(unittest.TestCase):
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(self.calls(), [
             f"tab create --workspace w1 --label Claude accounts --cwd {ROOT} --no-focus",
-            "pane run w1:p42 python3 src/accounts_dash.py --watch --demo",
+            f"pane run w1:p42 python3 {bash_quote(ROOT / 'src' / 'accounts_dash.py')}"
+            " --watch --demo",
         ])
         self.assertIn("w1:p42", done.stdout)
 
