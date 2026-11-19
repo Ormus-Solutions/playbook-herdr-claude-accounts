@@ -180,7 +180,7 @@ one of the two tabs.
 | When a window counts as full | `full_at`, top of the config | `full_at = 95` moves you on before the wall |
 | How often the pane reads the files | `refresh_seconds`, top of the config (5 or more) | `refresh_seconds = 60` |
 | Another config file | the `--config` flag | `python3 src/accounts_dash.py --watch --config ~/dash.toml` |
-| A key that opens it as a popup | the block in `examples/herdr-popup.toml`, added to `~/.config/herdr/config.toml`, then `herdr config check` and `herdr server reload-config` | `key = "prefix+alt+a"` |
+| A key that opens it as a popup | the block in `examples/herdr-popup.toml`, added to `~/.config/herdr/config.toml`; replace `/path/to/playbook-herdr-claude-accounts` in its `command` with the absolute path of your clone (`pwd` in the clone prints it), then run `herdr config check` and `herdr server reload-config`. The check passes with the placeholder still in, so replace it first | `key = "prefix+alt+a"` |
 | The tab's name | `--label` in `scripts/herdr-tab.sh` | `--label "Usage"` |
 | No colours | the `NO_COLOR` environment variable | `NO_COLOR=1 python3 src/accounts_dash.py` |
 
