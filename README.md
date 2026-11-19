@@ -73,8 +73,8 @@ you finish, run the "Done when" checks and show me their output.
    gets its first numbers: `CLAUDE_CONFIG_DIR=~/.claude-work claude`
 5. Look at it once: `python3 src/accounts_dash.py`
 6. Give it a Herdr tab: from a shell inside Herdr run `scripts/herdr-tab.sh`,
-   or open a new tab and run `python3 src/accounts_dash.py --watch`
-   (r refreshes, q quits).
+   or open a new tab, name it `Claude accounts` when Herdr asks, and run
+   `python3 src/accounts_dash.py --watch` in this repo (r refreshes, q quits).
 
 ## Preview
 

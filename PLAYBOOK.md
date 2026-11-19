@@ -155,11 +155,13 @@ scripts/herdr-tab.sh
 It makes a tab named "Claude accounts" in the current workspace, without
 moving the person's focus, and starts `python3 src/accounts_dash.py --watch`
 in it. By hand it is the same: open a new tab (the prefix, `ctrl+b` unless it
-was changed, then `c`), `cd` to this repo, and run that command. In the tab,
-`r` refreshes and `q` quits.
+was changed, then `c`), name it `Claude accounts` when Herdr asks, `cd` to
+this repo, and run that command. In the tab, `r` refreshes and `q` quits.
 
-Verify: `herdr tab list --workspace "$HERDR_WORKSPACE_ID" | grep -c '"Claude accounts"'`
-Expected: `1`, and the tab shows the dash
+Verify: `herdr tab list --workspace "$HERDR_WORKSPACE_ID" | python3 -c 'import json, sys; print(sum(t["label"] == "Claude accounts" for t in json.load(sys.stdin)["result"]["tabs"]))'`
+Expected: `1`, and the tab shows the dash. The command counts the tabs in
+Herdr's JSON reply, not lines of text. A `2` means the step ran twice: close
+one of the two tabs.
 
 ## Adapt it
 
