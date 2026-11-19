@@ -5,9 +5,13 @@ Run them with: python3 -m unittest discover -s tests
 from __future__ import annotations
 
 import json
+import os
+import select
+import signal
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from datetime import timezone
 from pathlib import Path
@@ -234,6 +238,56 @@ class ConfigTest(unittest.TestCase):
 
     def test_bad_toml(self) -> None:
         self.assertIn("not valid TOML", self.problems("accounts = [\n"))
+
+
+@unittest.skipUnless(hasattr(os, "openpty"), "needs a Unix terminal")
+class WatchTest(unittest.TestCase):
+    def test_the_pane_draws_and_q_quits(self) -> None:
+        """--watch in a pseudo-terminal (a fake terminal the test holds both ends
+        of): it draws the dash, q ends it, and the screen is handed back."""
+        import pty
+
+        pid, fd = pty.fork()
+        if pid == 0:  # the child: become the dash
+            os.execv(sys.executable, [sys.executable, str(ROOT / "src" / "accounts_dash.py"),
+                                      "--demo", "--watch"])
+        seen = b""
+        try:
+            while b"q quits" not in seen:
+                ready, _, _ = select.select([fd], [], [], 10)
+                self.assertTrue(ready, "the dash drew nothing in 10 s")
+                seen += os.read(fd, 65536)
+            os.write(fd, b"q")
+            # A dash that ignores q keeps redrawing each second, so the wait
+            # needs a deadline of its own, not only a pause in the output.
+            quit_by = time.monotonic() + 10
+            while True:
+                ready, _, _ = select.select([fd], [], [], 1)
+                self.assertLess(time.monotonic(), quit_by, "the dash did not quit on q")
+                if not ready:
+                    continue
+                try:
+                    chunk = os.read(fd, 65536)
+                except OSError:  # the child closed the terminal
+                    break
+                if not chunk:
+                    break
+                seen += chunk
+        finally:
+            deadline = time.monotonic() + 5
+            done, status = os.waitpid(pid, os.WNOHANG)
+            while done == 0 and time.monotonic() < deadline:
+                time.sleep(0.05)
+                done, status = os.waitpid(pid, os.WNOHANG)
+            if done == 0:  # still running after a failed check: end it, never hang
+                os.kill(pid, signal.SIGKILL)
+                _, status = os.waitpid(pid, 0)
+            os.close(fd)
+        self.assertEqual(os.waitstatus_to_exitcode(status), 0)
+        text = seen.decode("utf-8", "replace")
+        self.assertIn("Use next:", text)
+        self.assertIn("\033[?1049h", text)  # it took the alternate screen
+        self.assertIn("\033[?1049l", text)  # and gave it back
 
 
 if __name__ == "__main__":
