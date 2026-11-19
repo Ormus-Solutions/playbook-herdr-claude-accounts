@@ -32,7 +32,7 @@ How it works, in one line per part:
 |---|---|---|---|
 | Python 3.11 or newer | `python3 -c 'import sys; print(sys.version_info >= (3, 11))'` | `True` | install a newer Python from python.org or your package manager |
 | git | `git --version` | a version line | install git |
-| Claude Code | `claude --version` | a version line; this was tested with 2.1.328 | install or update Claude Code; an older version may not pass `rate_limits` to the status line |
+| Claude Code | `claude --version` | a version line; the status line schema this relies on was read from 2.1.328 | install or update Claude Code; an older version may not pass `rate_limits` to the status line |
 | One config dir per account, each logged in with a Pro or Max subscription | `for d in ~/.claude ~/.claude-*; do [ -d "$d" ] && echo "$d"; done` | one folder per account the person names | make one: `CLAUDE_CONFIG_DIR=~/.claude-work claude`, then `/login` inside it (see the note below) |
 | Herdr, for the tab (step 8 only) | `herdr --version` | `herdr 0.9.5` or newer | install Herdr, or skip step 8 and run the dash in any terminal |
 | A shell inside Herdr (step 8 only) | `test "${HERDR_ENV:-}" = 1 && echo inside` | `inside` | open a pane in Herdr and run step 8 from there |

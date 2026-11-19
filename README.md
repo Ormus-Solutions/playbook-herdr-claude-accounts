@@ -40,7 +40,7 @@ usage windows, so there is nothing to show.
 |---|---|---|
 | Python | 3.11 or newer | `python3 --version` |
 | git | any recent version | `git --version` |
-| Claude Code | one whose status line input has `rate_limits` (tested with 2.1.328) | `claude --version` |
+| Claude Code | one whose status line input has `rate_limits` (the schema was read from 2.1.328) | `claude --version` |
 | A subscription login in each account | Pro or Max | `/usage` inside Claude Code shows the windows |
 | Herdr | 0.9.5 (tested); optional, the dash runs in any terminal | `herdr --version` |
 
