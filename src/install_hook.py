@@ -101,9 +101,12 @@ def install(folder: Path) -> str:
         data["statusLine"] = {**current, "command": hook_command()}
         write_json(target, data)
         return f"updated the hook's path in {target}"
-    if target.exists():
+    created = not target.exists()
+    if not created:
         shutil.copy2(target, target.with_name(target.name + BACKUP_SUFFIX))
-    write_json(target.parent / SIDECAR, {"previous": current})  # null when there was none
+    # "previous" is null when there was no status line; "created" says that
+    # settings.json itself is new, so remove can delete it again.
+    write_json(target.parent / SIDECAR, {"previous": current, "created": created})
     new = {"type": "command", "command": hook_command()}
     if isinstance(current, dict) and "padding" in current:
         new["padding"] = current["padding"]
@@ -122,17 +125,22 @@ def remove(folder: Path) -> list[str]:
     if target.is_file():
         data = read_settings(target)
         if is_ours(data.get("statusLine")):
-            previous, readable = None, True
+            previous, created, readable = None, False, True
             if sidecar.exists():
                 try:
-                    previous = json.loads(sidecar.read_text(encoding="utf-8")).get("previous")
+                    record = json.loads(sidecar.read_text(encoding="utf-8"))
+                    previous, created = record.get("previous"), record.get("created") is True
                 except (OSError, ValueError, AttributeError):
                     readable = False
             if previous is None:
                 data.pop("statusLine")
             else:
                 data["statusLine"] = previous
-            write_json(target, data)
+            if created and not data:
+                target.unlink()  # install made this file, and nothing else is in it
+                notes.append(f"deleted {target}, which install had made")
+            else:
+                write_json(target, data)
             if readable:
                 notes.append(f"status line put back as it was in {target}")
             else:

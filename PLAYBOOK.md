@@ -185,7 +185,8 @@ Expected: `1`, and the tab shows the dash
 2. For each account folder: `python3 src/install_hook.py remove ~/.claude-work`.
    It puts the old `statusLine` back exactly (or removes the key when there was
    none) and deletes `accounts-dash-usage.json`, `accounts-dash-hook.json` and
-   `settings.json.accounts-dash.bak`. Check: `python3 src/install_hook.py status ~/.claude-work`
+   `settings.json.accounts-dash.bak`. A `settings.json` that install made, and
+   that still holds nothing else, is deleted too. Check: `python3 src/install_hook.py status ~/.claude-work`
    exits 1 and says `not installed`.
 3. Delete the config: `rm -r ~/.config/playbook-herdr-claude-accounts`.
 4. If you added the popup key, take its block out of `~/.config/herdr/config.toml`

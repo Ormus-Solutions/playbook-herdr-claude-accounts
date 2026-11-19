@@ -119,11 +119,18 @@ class InstallTest(TempFolder):
         self.assertEqual(self.settings()["statusLine"],
                          {"type": "command", "command": install_hook.hook_command()})
         self.assertEqual(json.loads((self.acct / install_hook.SIDECAR).read_text()),
-                         {"previous": None})
+                         {"previous": None, "created": True})
         self.assertEqual(cli("status", str(self.acct)), 0)
         self.assertEqual(cli("remove", str(self.acct)), 0)
-        self.assertNotIn("statusLine", self.settings())
-        self.assertEqual(sorted(p.name for p in self.acct.iterdir()), ["settings.json"])
+        self.assertEqual(list(self.acct.iterdir()), [])  # as it was: install made settings.json
+
+    def test_a_made_settings_file_stays_when_something_else_was_added(self) -> None:
+        install_hook.install(self.acct)
+        data = self.settings()
+        data["model"] = "demo"  # the person changed a setting meanwhile
+        (self.acct / "settings.json").write_text(json.dumps(data))
+        install_hook.remove(self.acct)
+        self.assertEqual(self.settings(), {"model": "demo"})
 
     def test_install_twice_changes_nothing(self) -> None:
         install_hook.install(self.acct)
