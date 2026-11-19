@@ -122,7 +122,7 @@ not run since (`research` above).
 | `examples/expected-output.txt` | what `examples/run.sh` must print |
 | `examples/herdr-popup.toml` | a Herdr key that opens the dash as a popup |
 | `tests/` | offline tests that pin the behaviour on the synthetic data |
-| `check.sh` | the one gate: tests, shellcheck, placeholders, scrub |
+| `check.sh` | the one gate: tests, shellcheck, placeholders, scrub; `./check.sh --publish` also stops on a commit e-mail that is not a noreply address |
 | `scripts/scrub.sh` | the scrub check, copied from playbook-packaging |
 | `CHANGELOG.md` | what changed, newest first |
 
