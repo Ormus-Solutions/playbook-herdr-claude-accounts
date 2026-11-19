@@ -84,7 +84,8 @@ Then edit that file: one `[[accounts]]` table per account, with `label` and
 `config_dir`. Delete the example tables the person does not have.
 
 Verify: `python3 src/accounts_dash.py --json | python3 -c 'import json, sys; print(*[(a["label"], a["state"]) for a in json.load(sys.stdin)["accounts"]])'`
-Expected: one `(label, state)` pair per account the person named; the state is `no reading` until step 6, or `ok`
+Expected: one `(label, state)` pair per account the person named; the state is `no reading` until step 6, or `ok`.
+A state `no folder` means that `config_dir` does not exist: fix the path in the config before step 5, because the hook goes into the folder you name there.
 
 ### 4. See what the hook keeps, on synthetic input
 

@@ -154,10 +154,11 @@ class Window:
 class Account:
     label: str
     plan: str
-    state: str  # "ok", "no reading" or "unreadable"
+    state: str  # "ok", "no reading", "no folder" or "unreadable"
     windows: list[Window] = field(default_factory=list)
     read_at: float | None = None
     order: int = 0  # its place in the config, for ties
+    folder: Path | None = None  # its config_dir, shown when that folder is missing
 
 
 def read_plan(config_dir: Path, home: Path) -> str | None:
@@ -192,6 +193,10 @@ def parse_windows(raw: object) -> list[Window]:
 
 
 def read_snapshot(config_dir: Path) -> tuple[str, list[Window], float | None]:
+    # A missing folder is a wrong path in the config, not an account that was
+    # never used: the two need different fixes, so they get different states.
+    if not config_dir.is_dir():
+        return "no folder", [], None
     path = config_dir / SNAPSHOT
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -211,7 +216,7 @@ def load_accounts(settings: Settings, home: Path) -> list[Account]:
     for n, (label, folder, plan) in enumerate(settings.accounts):
         state, windows, read_at = read_snapshot(folder)
         out.append(Account(label, plan or read_plan(folder, home) or "?", state, windows,
-                           read_at, n))
+                           read_at, n, folder))
     return out
 
 
@@ -338,6 +343,10 @@ def render(accounts: list[Account], now: float, full_at: float, tz: tzinfo | Non
         head = f"  {paint(BOLD, a.label.ljust(label_w))}  {a.plan.ljust(plan_w)}  "
         if a.state == "no reading":
             lines.append(head + paint(DIM, "no reading yet: start Claude Code with this account once"))
+            continue
+        if a.state == "no folder":
+            lines.append(head + paint(YELLOW, f"no folder: {a.folder} does not exist; "
+                                              "check config_dir in the config"))
             continue
         if a.state == "unreadable":
             lines.append(head + paint(YELLOW, "the usage file cannot be read; it is written "

@@ -189,6 +189,16 @@ class FilesTest(unittest.TestCase):
         self.assertEqual((state, [w.key for w in windows], read_at),
                          ("ok", ["five_hour", "seven_day"], 5.0))
 
+    def test_a_missing_folder_is_not_an_unused_account(self) -> None:
+        # A typo in config_dir must not say "start Claude Code once": the person
+        # did that already, in the right folder.
+        config = write_config(self.dir, '[[accounts]]\nlabel = "work"\nconfig_dir = "typo"\n')
+        accounts = dash.load_accounts(dash.load_config(config), self.dir)
+        self.assertEqual(dash.as_json(accounts, NOW, 100)["accounts"][0]["state"], "no folder")
+        text = "\n".join(dash.render(accounts, NOW, 100, timezone.utc))
+        self.assertIn(f"no folder: {self.dir / 'typo'} does not exist; check config_dir", text)
+        self.assertNotIn("start Claude Code with this account once", text)
+
 
 class ConfigTest(unittest.TestCase):
     def setUp(self) -> None:
