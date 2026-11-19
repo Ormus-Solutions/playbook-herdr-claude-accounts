@@ -117,12 +117,18 @@ class RenderTest(unittest.TestCase):
     def test_no_reading_at_all(self) -> None:
         lines = dash.render([account("x", state="no reading")], NOW, 100, timezone.utc)
         self.assertIn("No account has a reading yet", lines[1])
+        self.assertFalse(any(line.startswith("*") for line in lines))  # no star, no legend
 
     def test_the_star_marks_the_limiting_window(self) -> None:
         a = account("a", ("five_hour", 30, NOW + H), ("seven_day", 70, NOW + D))
         lines = dash.render([a], NOW, 100, timezone.utc)
         week = next(line for line in lines if line.strip().startswith("week"))
         self.assertIn("70%*", week)
+        self.assertEqual(lines[-1], "* the fullest window: it stops the account first")
+
+    def test_one_window_gets_no_star_and_no_legend(self) -> None:
+        lines = dash.render([account("a", ("five_hour", 30, NOW + H))], NOW, 100, timezone.utc)
+        self.assertFalse(any("*" in line for line in lines))
 
     def test_colours_only_when_asked(self) -> None:
         a = account("a", ("seven_day", 70, NOW + D))

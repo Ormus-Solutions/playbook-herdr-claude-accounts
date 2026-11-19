@@ -339,6 +339,7 @@ def render(accounts: list[Account], now: float, full_at: float, tz: tzinfo | Non
     lines.append("")
     label_w = max(len(a.label) for a in order)
     plan_w = max(len(a.plan) for a in order)
+    starred = False  # the legend explains the "*", so it shows only with one
     for a in order:
         head = f"  {paint(BOLD, a.label.ljust(label_w))}  {a.plan.ljust(plan_w)}  "
         if a.state == "no reading":
@@ -362,11 +363,13 @@ def render(accounts: list[Account], now: float, full_at: float, tz: tzinfo | Non
         for w in a.windows:
             used = w.used(now)
             mark = "*" if len(a.windows) > 1 and w is top and used > 0 else " "
+            starred = starred or mark == "*"
             when_text = (f"reset since the reading (was {w.pct:.0f}%)" if w.passed(now)
                          else resets(w.resets_at, now, tz))
             lines.append(f"    {w.label:<5} {bar(used, full_at, paint)} {used:>4.0f}%{mark} "
                          f"{paint(DIM, when_text)}")
-    lines += ["", paint(DIM, "* the window that limits the account now")]
+    if starred:
+        lines += ["", paint(DIM, "* the fullest window: it stops the account first")]
     return lines
 
 

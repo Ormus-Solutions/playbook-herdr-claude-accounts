@@ -98,7 +98,7 @@ Use next: side (fullest window 12%)
     week  ████████████████████  100%* resets in 2d 3h (Sat 13:00)
   spare     ?        no reading yet: start Claude Code with this account once
 
-* the window that limits the account now
+* the fullest window: it stops the account first
 ```
 
 How to read it: the accounts with room come first, the emptiest on top. On a
