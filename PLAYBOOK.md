@@ -7,7 +7,8 @@ does not match and report what you saw.
 
 Two rules hold for every step: never print a token or an e-mail address, and
 ask the person before a step that changes something outside this repo (steps
-3, 5, 6 and 8 do).
+3, 5, 6 and 8 do, and so do the popup key under "Adapt it" and every step of
+"Undo").
 
 ## Goal
 
