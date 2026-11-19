@@ -48,6 +48,11 @@ usage windows, so there is nothing to show.
 
 ### Hand it to your agent
 
+```bash
+git clone https://github.com/Ormus-Solutions/playbook-herdr-claude-accounts
+cd playbook-herdr-claude-accounts
+```
+
 Clone this repo, open your coding agent (Claude Code, Codex, Grok) inside the
 clone, and paste this:
 
