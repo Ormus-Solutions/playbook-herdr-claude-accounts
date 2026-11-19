@@ -206,7 +206,9 @@ Expected: `1`, and the tab shows the dash
 - Reads: the config file; in each account folder, `accounts-dash-usage.json`
   and one field of Claude Code's `.claude.json`, the plan name
   (`oauthAccount.planDisplayName`; for `~/.claude` the file is `~/.claude.json`).
-  The hook reads only its stdin, which Claude Code sends it.
+  The hook reads its stdin, which Claude Code sends it, and the side file
+  `accounts-dash-hook.json` next to the real `settings.json`, which holds the
+  earlier status line command that it runs.
 - Writes: the hook writes `accounts-dash-usage.json` in the account folder,
   readable by you only (mode 600): two numbers per window and the time.
   `install_hook.py` writes `settings.json`: the `statusLine` key changes; the
@@ -222,4 +224,4 @@ Expected: `1`, and the tab shows the dash
   never changes which account is logged in, and never closes a Herdr tab or
   pane.
 - Runs: the hook runs the status line command the account had before, with the
-  same input, as Claude Code did.
+  same input, through the shell, as Claude Code did.
