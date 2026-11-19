@@ -160,6 +160,43 @@ class InstallTest(TempFolder):
         self.assertEqual(self.settings(), original)
         self.assertEqual(sorted(p.name for p in self.acct.iterdir()), ["settings.json"])
 
+    def test_install_keeps_the_layout_and_remove_puts_the_bytes_back(self) -> None:
+        # For the default account this is the person's main settings.json: a
+        # round trip must leave it as it was, not just equal as JSON.
+        earlier = {"type": "command", "command": "bash ~/clock.sh", "padding": 0}
+        original = json.dumps({"language": "español → ñ", "statusLine": earlier},
+                              indent=4, ensure_ascii=False) + "\n"
+        path = self.acct / "settings.json"
+        path.write_text(original, encoding="utf-8")
+        install_hook.install(self.acct)
+        text = path.read_text(encoding="utf-8")
+        self.assertIn('\n    "language": "español → ñ"', text)  # 4 spaces, no \u escapes
+        self.assertEqual(self.settings()["statusLine"],
+                         {"type": "command", "command": install_hook.hook_command(),
+                          "padding": 0})
+        notes = install_hook.remove(self.acct)
+        self.assertEqual(path.read_text(encoding="utf-8"), original)
+        self.assertEqual(sorted(p.name for p in self.acct.iterdir()), ["settings.json"])
+        self.assertIn("byte for byte", notes[0])
+
+    def test_a_setting_changed_since_install_keeps_the_backup(self) -> None:
+        path = self.acct / "settings.json"
+        path.write_text(json.dumps({"model": "demo"}), encoding="utf-8")
+        install_hook.install(self.acct)
+        data = self.settings()
+        data["theme"] = "dark"  # the person changed a setting meanwhile
+        path.write_text(json.dumps(data), encoding="utf-8")
+        notes = install_hook.remove(self.acct)
+        self.assertEqual(self.settings(), {"model": "demo", "theme": "dark"})
+        self.assertTrue((self.acct / ("settings.json" + install_hook.BACKUP_SUFFIX)).is_file())
+        self.assertIn("the backup stays", "\n".join(notes))
+
+    def test_remove_says_put_back_only_when_the_file_is_still_there(self) -> None:
+        install_hook.install(self.acct)  # a new account: install makes settings.json
+        notes = install_hook.remove(self.acct)
+        self.assertFalse((self.acct / "settings.json").exists())
+        self.assertFalse(any("put back" in n for n in notes), notes)
+
     def test_a_linked_settings_file_stays_a_link(self) -> None:
         shared = self.dir / "shared"
         shared.mkdir()

@@ -184,10 +184,13 @@ Expected: `1`, and the tab shows the dash
 
 1. In the tab, press `q`, then close the tab (the prefix, then `shift+x`).
 2. For each account folder: `python3 src/install_hook.py remove ~/.claude-work`.
-   It puts the old `statusLine` back exactly (or removes the key when there was
-   none) and deletes `accounts-dash-usage.json`, `accounts-dash-hook.json` and
-   `settings.json.accounts-dash.bak`. A `settings.json` that install made, and
-   that still holds nothing else, is deleted too. Check: `python3 src/install_hook.py status ~/.claude-work`
+   When no other setting changed since install, it puts `settings.json` back
+   from `settings.json.accounts-dash.bak`, byte for byte. When one did, it puts
+   the old `statusLine` back (or removes the key when there was none), keeps
+   the other change, and keeps the backup so the person can compare the two; it
+   says so. It deletes `accounts-dash-usage.json` and `accounts-dash-hook.json`.
+   A `settings.json` that install made, and that still holds nothing else, is
+   deleted too. Check: `python3 src/install_hook.py status ~/.claude-work`
    exits 1 and says `not installed`.
 3. Delete the config: `rm -r ~/.config/playbook-herdr-claude-accounts`.
 4. If you added the popup key, take its block out of `~/.config/herdr/config.toml`
@@ -203,8 +206,12 @@ Expected: `1`, and the tab shows the dash
   The hook reads only its stdin, which Claude Code sends it.
 - Writes: the hook writes `accounts-dash-usage.json` in the account folder,
   readable by you only (mode 600): two numbers per window and the time.
-  `install_hook.py` writes `settings.json` (only the `statusLine` key changes;
-  the others are kept), `accounts-dash-hook.json` and a backup
+  `install_hook.py` writes `settings.json`: the `statusLine` key changes; the
+  other keys, their order, the indent of an indented file and text such as
+  `ñ` stay. Python's `json` module writes the file again, so other spacing can
+  change (`"a":1` becomes `"a": 1`, a file on one line gets a 2-space indent)
+  until `remove` puts the original bytes back. It
+  also writes `accounts-dash-hook.json` and a backup
   `settings.json.accounts-dash.bak` next to it. The dash writes nothing.
   `scripts/herdr-tab.sh` makes one tab.
 - Never: it never opens a credentials file or a keychain, never makes a

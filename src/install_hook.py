@@ -13,7 +13,8 @@ change. `remove` puts the old status line back and deletes every file this
 playbook wrote for that account.
 
 The pattern is a reversible change: each write records what it replaced, so
-the undo is exact and nobody has to remember what was there before.
+nobody has to remember what was there before. When no other setting changed
+since install, `remove` puts the backup back, byte for byte.
 
 When settings.json is a link (some account tools share one settings file
 between accounts), the change goes through the link to the real file, and the
@@ -27,6 +28,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shlex
 import shutil
 import sys
@@ -75,13 +77,36 @@ def read_settings(path: Path) -> dict:
     return data
 
 
-def write_json(path: Path, data: object) -> None:
-    """Write in one step (a temp file, then a rename), keeping the old file's mode."""
+def indent_of(path: Path) -> int | str:
+    """The indent a JSON file uses (the first indented line), so a rewrite keeps its
+    look; 2 spaces for a new file or a file on one line."""
+    try:
+        found = re.search(r"\n([ \t]+)\S", path.read_text(encoding="utf-8"))
+    except OSError:
+        found = None
+    return found.group(1) if found else 2
+
+
+def same_but_status_line(backup: Path, data: dict) -> bool:
+    """True when the backup holds the same settings as data, the status line aside."""
+    try:
+        old = json.loads(backup.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    if not isinstance(old, dict):
+        return False
+    old.pop("statusLine", None)
+    return old == {k: v for k, v in data.items() if k != "statusLine"}
+
+
+def write_json(path: Path, data: object, indent: int | str = 2) -> None:
+    """Write in one step (a temp file, then a rename), keeping the old file's mode.
+    Text such as ñ stays as it is (ensure_ascii=False), not as \\u escapes."""
     mode = path.stat().st_mode & 0o777 if path.exists() else 0o600
     fd, tmp = tempfile.mkstemp(prefix=".accounts-dash-", suffix=".tmp", dir=str(path.parent))
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2)
+            json.dump(data, f, indent=indent, ensure_ascii=False)
             f.write("\n")
         os.chmod(tmp, mode)
         os.replace(tmp, path)
@@ -99,7 +124,7 @@ def install(folder: Path) -> str:
         if current.get("command") == hook_command():
             return f"already installed in {target}"
         data["statusLine"] = {**current, "command": hook_command()}
-        write_json(target, data)
+        write_json(target, data, indent_of(target))
         return f"updated the hook's path in {target}"
     created = not target.exists()
     if not created:
@@ -111,7 +136,7 @@ def install(folder: Path) -> str:
     if isinstance(current, dict) and "padding" in current:
         new["padding"] = current["padding"]
     data["statusLine"] = new
-    write_json(target, data)
+    write_json(target, data, indent_of(target))
     kept = "; your earlier status line still shows, the hook runs it" if current else ""
     return f"installed in {target}{kept}"
 
@@ -132,21 +157,31 @@ def remove(folder: Path) -> list[str]:
                     previous, created = record.get("previous"), record.get("created") is True
                 except (OSError, ValueError, AttributeError):
                     readable = False
-            if previous is None:
-                data.pop("statusLine")
+            if not created and backup.is_file() and same_but_status_line(backup, data):
+                # Nothing else changed since install: the backup is the file as it
+                # was, byte for byte (layout, escapes, mode), so it goes back whole.
+                os.replace(backup, target)
+                notes.append(f"put {target} back from its backup, byte for byte")
             else:
-                data["statusLine"] = previous
-            if created and not data:
-                target.unlink()  # install made this file, and nothing else is in it
-                notes.append(f"deleted {target}, which install had made")
-            else:
-                write_json(target, data)
-            if readable:
-                notes.append(f"status line put back as it was in {target}")
-            else:
-                keep_backup = True
-                notes.append(f"took the hook out of {target}, but the side file could not be "
-                             f"read: your old settings are in {backup}")
+                if previous is None:
+                    data.pop("statusLine")
+                else:
+                    data["statusLine"] = previous
+                if created and not data:
+                    target.unlink()  # install made this file, and nothing else is in it
+                    notes.append(f"deleted {target}, which install had made")
+                else:
+                    write_json(target, data, indent_of(target))
+                    keep_backup = backup.is_file()
+                    if not readable:
+                        notes.append(f"took the hook out of {target}, but the side file could "
+                                     f"not be read: your old settings are in {backup}")
+                    elif keep_backup:
+                        notes.append(f"status line put back in {target}. Other settings "
+                                     f"changed since install, so the backup stays: compare "
+                                     f"{backup} with it, then delete the backup")
+                    else:
+                        notes.append(f"status line put back as it was in {target}")
     for path in (sidecar, folder / SNAPSHOT) + (() if keep_backup else (backup,)):
         if path.exists():
             path.unlink()
