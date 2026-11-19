@@ -42,7 +42,7 @@ usage windows, so there is nothing to show.
 | git | any recent version | `git --version` |
 | Claude Code | 2.1.80 or newer: the status line input got `rate_limits` then (the schema was read from 2.1.328) | `claude --version` |
 | A subscription login in each account | Pro or Max | `/usage` inside Claude Code shows the windows |
-| Herdr | 0.9.5 (tested); optional, the dash runs in any terminal | `herdr --version` |
+| [Herdr](https://herdr.dev) | 0.9.5 (tested); optional, the dash runs in any terminal | `herdr --version` |
 
 ## Quick start
 
@@ -122,10 +122,12 @@ not run since (`research` above).
 | `examples/expected-output.txt` | what `examples/run.sh` must print |
 | `examples/herdr-popup.toml` | a Herdr key that opens the dash as a popup |
 | `tests/` | offline tests that pin the behaviour on the synthetic data |
-| `check.sh` | the one gate: tests, shellcheck, placeholders, scrub; `./check.sh --publish` also stops on a commit e-mail that is not a noreply address |
-| `scripts/scrub.sh` | the scrub check, copied from playbook-packaging |
+| `check.sh` | the one gate: tests, shellcheck, placeholders, scrub |
+| `scripts/scrub.sh` | the scrub check, copied unchanged from playbook-packaging |
 | `CHANGELOG.md` | what changed, newest first |
 
 ## Credits
 
-Made by Ormus (Ormus Solutions). Packaged with playbook-packaging. MIT license.
+Made by Ormus (Ormus Solutions). Packaged with
+[playbook-packaging](https://github.com/Ormus-Solutions/playbook-packaging),
+the playbook that sets how these playbook repos are packaged. MIT license.
