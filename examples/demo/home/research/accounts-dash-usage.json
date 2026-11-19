@@ -1,0 +1,14 @@
+{
+ "version": 1,
+ "written_at": 1768463700,
+ "windows": {
+  "five_hour": {
+   "used_percentage": 87.0,
+   "resets_at": 1768470000
+  },
+  "seven_day": {
+   "used_percentage": 100.0,
+   "resets_at": 1768654800
+  }
+ }
+}

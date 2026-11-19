@@ -1,0 +1,18 @@
+Claude accounts  Thu 15 Jan 10:00 UTC
+Use next: side (fullest window 12%)
+
+  side      Pro      read 4m ago
+    5h    ██░░░░░░░░░░░░░░░░░░   12%* resets in 2h 10m (Thu 12:10)
+    week  █░░░░░░░░░░░░░░░░░░░    6%  resets in 4d 5h (Mon 15:00)
+  main      Max 20x  read now
+    5h    ████████░░░░░░░░░░░░   41%  resets in 3h 5m (Thu 13:05)
+    week  ███████████░░░░░░░░░   55%* resets in 2d 8h (Sat 18:00)
+  night     Max 5x   full until Thu 11:30 (in 1h 30m) · read 12m ago
+    5h    ████████████████████  100%* resets in 1h 30m (Thu 11:30)
+    week  ██████████████░░░░░░   72%  resets in 5d 0h (Tue 10:00)
+  research  Max 5x   full until Sat 13:00 (in 2d 3h) · read 2h ago
+    5h    ░░░░░░░░░░░░░░░░░░░░    0%  reset since the reading (was 87%)
+    week  ████████████████████  100%* resets in 2d 3h (Sat 13:00)
+  spare     ?        no reading yet: start Claude Code with this account once
+
+* the window that limits the account now

@@ -1,0 +1,30 @@
+# Example config. Copy it to ~/.config/playbook-herdr-claude-accounts/config.toml
+# and change it. The dash reads its settings only from this file: there are no
+# hosts or paths in the code.
+
+# Seconds between two reads of the usage files in --watch mode (5 or more).
+refresh_seconds = 30
+
+# A window at or above this percent counts as full. 100 means "the account is
+# stopped"; a lower number such as 95 moves you on before you hit the wall.
+full_at = 100
+
+# One [[accounts]] table per Claude Code account.
+#   label       the name the dash shows. Pick a short word; never an e-mail.
+#   config_dir  the account's folder: what you set CLAUDE_CONFIG_DIR to when
+#               you start it, or ~/.claude for the default account.
+#   plan        optional. The dash reads the plan name Claude Code saved at
+#               login; set it here to show something else.
+
+[[accounts]]
+label = "main"
+config_dir = "~/.claude"
+
+[[accounts]]
+label = "work"
+config_dir = "~/.claude-work"
+
+[[accounts]]
+label = "side"
+config_dir = "~/.claude-side"
+plan = "Pro"

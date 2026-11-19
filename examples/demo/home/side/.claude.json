@@ -1,0 +1,8 @@
+{
+  "oauthAccount": {
+    "planDisplayName": "Pro",
+    "emailAddress": "demo-2@example.com",
+    "displayName": "Demo user 2"
+  },
+  "numStartups": 3
+}

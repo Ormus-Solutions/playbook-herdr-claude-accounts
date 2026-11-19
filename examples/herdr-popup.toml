@@ -1,0 +1,13 @@
+# A key that opens the dash as a popup over your tabs: the Herdr prefix
+# (ctrl+b unless you changed it), then alt+a. q closes it.
+#
+# Add this block to ~/.config/herdr/config.toml, put the path of your clone
+# in "command", then check the file and load it:
+#   herdr config check
+#   herdr server reload-config
+[[keys.command]]
+key = "prefix+alt+a"
+type = "popup"
+command = "python3 /path/to/playbook-herdr-claude-accounts/src/accounts_dash.py --watch"
+width = "90%"
+height = "90%"

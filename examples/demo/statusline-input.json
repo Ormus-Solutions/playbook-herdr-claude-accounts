@@ -1,0 +1,13 @@
+{
+  "session_id": "demo-session-0001",
+  "transcript_path": "/tmp/acme-web/demo-transcript.jsonl",
+  "cwd": "/tmp/acme-web",
+  "model": {"id": "demo-model", "display_name": "Demo"},
+  "workspace": {"current_dir": "/tmp/acme-web", "project_dir": "/tmp/acme-web"},
+  "version": "2.1.328",
+  "cost": {"total_cost_usd": 0.42},
+  "rate_limits": {
+    "five_hour": {"used_percentage": 23, "resets_at": 1768478400},
+    "seven_day": {"used_percentage": 61, "resets_at": 1768665600}
+  }
+}

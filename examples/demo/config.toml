@@ -1,0 +1,24 @@
+# The demo config: five synthetic accounts in examples/demo/home.
+# A relative config_dir is read from this file's folder, so the demo runs
+# from any clone with no setup: python3 src/accounts_dash.py --demo
+
+[[accounts]]
+label = "main"
+config_dir = "home/main"
+
+[[accounts]]
+label = "side"
+config_dir = "home/side"
+
+[[accounts]]
+label = "research"
+config_dir = "home/research"
+
+[[accounts]]
+label = "night"
+config_dir = "home/night"
+plan = "Max 5x"   # no .claude.json in this folder, so the plan comes from here
+
+[[accounts]]
+label = "spare"
+config_dir = "home/spare"   # never started: no usage file yet
