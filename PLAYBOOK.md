@@ -111,7 +111,8 @@ python3 src/install_hook.py install ~/.claude-work
 
 If the account already had a status line, it keeps showing: the installer
 moves it to a side file (`accounts-dash-hook.json`) and the hook runs it with
-the same input. If `settings.json` is a link shared by several accounts, the
+the same input. Its other settings, such as `padding` and `refreshInterval`,
+stay on the new status line. If `settings.json` is a link shared by several accounts, the
 change goes to the real file; the next folders say `already installed`.
 
 Verify: `python3 src/install_hook.py status ~/.claude-work; echo "exit $?"`

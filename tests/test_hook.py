@@ -179,6 +179,17 @@ class InstallTest(TempFolder):
         self.assertEqual(sorted(p.name for p in self.acct.iterdir()), ["settings.json"])
         self.assertIn("byte for byte", notes[0])
 
+    def test_every_key_of_the_old_status_line_stays(self) -> None:
+        # refreshInterval re-runs a status line on a timer (a clock); losing it
+        # would stop that line while the hook is in.
+        earlier = {"type": "command", "command": "bash ~/clock.sh", "padding": 2,
+                   "refreshInterval": 10}
+        (self.acct / "settings.json").write_text(json.dumps({"statusLine": earlier}))
+        install_hook.install(self.acct)
+        self.assertEqual(self.settings()["statusLine"],
+                         {"type": "command", "command": install_hook.hook_command(),
+                          "padding": 2, "refreshInterval": 10})
+
     def test_a_setting_changed_since_install_keeps_the_backup(self) -> None:
         path = self.acct / "settings.json"
         path.write_text(json.dumps({"model": "demo"}), encoding="utf-8")

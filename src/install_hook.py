@@ -133,8 +133,8 @@ def install(folder: Path) -> str:
     # settings.json itself is new, so remove can delete it again.
     write_json(target.parent / SIDECAR, {"previous": current, "created": created})
     new = {"type": "command", "command": hook_command()}
-    if isinstance(current, dict) and "padding" in current:
-        new["padding"] = current["padding"]
+    if isinstance(current, dict):  # padding, refreshInterval and any later key stay
+        new.update({k: v for k, v in current.items() if k not in ("type", "command")})
     data["statusLine"] = new
     write_json(target, data, indent_of(target))
     kept = "; your earlier status line still shows, the hook runs it" if current else ""
