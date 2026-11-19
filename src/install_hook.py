@@ -34,6 +34,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+from typing import Any, TypeGuard
 
 HOOK = Path(__file__).resolve().parent / "usage_snapshot.py"
 MARK = "usage_snapshot.py"  # how install and remove recognise the hook
@@ -50,7 +51,7 @@ def hook_command() -> str:
     return f"python3 {shlex.quote(str(HOOK))}"
 
 
-def is_ours(status_line: object) -> bool:
+def is_ours(status_line: object) -> TypeGuard[dict[str, Any]]:
     return isinstance(status_line, dict) and MARK in str(status_line.get("command", ""))
 
 

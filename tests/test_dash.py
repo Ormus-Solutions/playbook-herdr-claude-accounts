@@ -91,7 +91,9 @@ class RankTest(unittest.TestCase):
     def test_a_window_past_its_reset_counts_as_empty(self) -> None:
         old = account("old", ("five_hour", 100, NOW - 60), ("seven_day", 40, NOW + D))
         self.assertTrue(dash.has_room(old, NOW, 100))
-        self.assertEqual(dash.limiting(old, NOW).key, "seven_day")
+        window = dash.limiting(old, NOW)
+        assert window is not None
+        self.assertEqual(window.key, "seven_day")
 
     def test_free_at_waits_for_the_last_full_window(self) -> None:
         both = account("both", ("five_hour", 100, NOW + H), ("seven_day", 100, NOW + 2 * D))

@@ -36,6 +36,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, tzinfo
 from pathlib import Path
+from typing import TypeGuard
 
 ROOT = Path(__file__).resolve().parents[1]
 DEMO_CONFIG = ROOT / "examples" / "demo" / "config.toml"
@@ -61,7 +62,7 @@ class Settings:
     full_at: float = 100.0
 
 
-def is_number(value: object) -> bool:
+def is_number(value: object) -> TypeGuard[int | float]:
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
